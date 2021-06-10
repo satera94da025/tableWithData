@@ -32,7 +32,7 @@ export default function App() {
         ]
     };
 
-    const [activeUser, setActiveUser] = useState(3);
+    const [activeUser, setActiveUser] = useState(2);
     const [dataToDisplay, setDataToDisplay] = useState([])
     const [tableData, setTableData] = useState([...initialState.data])
 
@@ -50,23 +50,52 @@ export default function App() {
 
     const handleSelect = (e) => setActiveUser(e.target.value);
 
-    const mock = new MockAdapter(axios, {delayResponse: getRandomIntInclusive(4000, 10000)});
+    const mock = new MockAdapter(axios, {delayResponse: getRandomIntInclusive(4000, 10000)}); // неправильная задержка 1 раз в минуту слать запрос
 
-    mock.onGet("/users", {}).reply(200, {
-        data: [
-            {id: 1, name: "Vasya", time: Date.now(), x: getRandomPosition(1), y: getRandomPosition(23)},
-            {id: 2, name: "Petya", time: Date.now(), x: getRandomPosition(11), y: getRandomPosition(21)},
-            {id: 3, name: "Sahsa", time: Date.now(), x: getRandomPosition(24), y: getRandomPosition(76)},
-            {id: 4, name: "Dasha", time: Date.now(), x: getRandomPosition(1), y: getRandomPosition(7)},
-            {id: 5, name: "Dima", time: Date.now(), x: getRandomPosition(3), y: getRandomPosition(6)},
-            {id: 6, name: "Lyosha", time: Date.now(), x: getRandomPosition(4), y: getRandomPosition(5)}
-        ]
-    });
+    const userList = [
+        {id: 1, name: "Vasya", time: Date.now(), x: getRandomPosition(1), y: getRandomPosition(23)}, // неправильная запрос сделать тесты
+        {id: 2, name: "Petya", time: Date.now(), x: getRandomPosition(11), y: getRandomPosition(21)},
+        {id: 3, name: "Sahsa", time: Date.now(), x: getRandomPosition(24), y: getRandomPosition(76)},
+        {id: 4, name: "Dasha", time: Date.now(), x: getRandomPosition(1), y: getRandomPosition(7)},
+        {id: 5, name: "Dima", time: Date.now(), x: getRandomPosition(3), y: getRandomPosition(6)},
+        {id: 6, name: "Lyosha", time: Date.now(), x: getRandomPosition(4), y: getRandomPosition(5)}
+    ]
+
+    // const getUsers = () => {
+    //     return [200, userList]
+    // };
+
+
+//
+//
+    mock.onGet(/\/users\/\d+\/track/).reply(config => getUser(config));
     axios
-        .get("/users", {})
+        .get("/users/4/track")
         .then(function (response) {
-            setResponseData(response.data.data);
+            setResponseData(response.data)
+            // console.log(response.data)
+
         });
+
+
+    const getUser = (config) => {
+        const id = extractIdPathParamFromUrl(config);
+        const user = userList.find(c => c.id === id);
+        return [200, user];
+    };
+    const extractIdPathParamFromUrl = (config) => { // чему равно id
+        let res = config.url.split('/').splice(1).splice(1,1).pop();
+        return +res;
+
+    };
+    // mock.onGet("/users", {}).reply(() => getUsers());
+    // axios
+    //     .get("/users", {})
+    //     .then(function (response) {
+    //         setResponseData(response.data)
+    //     });
+
+
     const useStyles = makeStyles({
         table: {
             minWidth: 650,
@@ -79,7 +108,7 @@ export default function App() {
 
     useEffect(() => {
         setDataToDisplay([...tableData].filter(el => Number(el.id) === Number(activeUser)))
-    }, [activeUser,tableData])
+    }, [activeUser, tableData])
 
     const classes = useStyles();
     return (
