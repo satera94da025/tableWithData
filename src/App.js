@@ -72,8 +72,8 @@ export default function App() {
     axios
         .get("/users/4/track")
         .then(function (response) {
-            setResponseData(response.data)
-            // console.log(response.data)
+            // setResponseData(response.data)
+            console.log(response.data)
 
         });
 
