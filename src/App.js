@@ -15,11 +15,7 @@ export default function App() {
     const axios = require("axios");
     const MockAdapter = require("axios-mock-adapter");
 
-    function getRandomIntInclusive(min, max) {
-        min = Math.ceil(min);
-        max = Math.floor(max);
-        return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
+
 
     let initialState = {
         data: [
@@ -61,7 +57,7 @@ export default function App() {
 
     const handleSelect = (e) => setActiveUser(e.target.value);
 
-    const mock = new MockAdapter(axios, {delayResponse: getRandomIntInclusive(4000, 10000)}); // неправильная задержка 1 раз в минуту слать запрос
+    const mock = new MockAdapter(axios, {delayResponse: 6e4});
 
 
 
